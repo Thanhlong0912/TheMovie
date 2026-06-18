@@ -1,14 +1,132 @@
 .movie__list {
-    padding: 0 3rem 3rem 3rem;
+  width: min(1320px, calc(100% - 2rem));
+  margin: 0 auto;
+  padding: 3.5rem 0 4.5rem;
+}
+
+.list__header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 440px);
+  gap: 1.5rem;
+  align-items: end;
+  margin-bottom: 1.5rem;
+}
+
+.list__eyebrow {
+  margin-bottom: 0.4rem;
+  color: #f4c542;
+  font-size: 0.78rem;
+  font-weight: 900;
+  text-transform: uppercase;
 }
 
 .list__title {
-font-size: 1.75rem;
-margin:  2.5rem;
+  margin: 0;
+  color: #fff;
+  font-size: 2rem;
+  line-height: 1.15;
+}
+
+.list__intro {
+  margin: 0;
+  color: #a9afbf;
+  line-height: 1.7;
 }
 
 .list__cards {
-    display: flex;
-    flex-wrap: wrap ;
-    justify-content: center;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 2rem 1.35rem;
+  overflow: visible;
+}
+
+.list__cards--wide {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 2.2rem 1.8rem;
+}
+
+.list__cardSkeleton,
+.list__message {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  background: #111217;
+}
+
+.list__cardSkeleton {
+  min-height: 420px;
+  overflow: hidden;
+  position: relative;
+}
+
+.list__cardSkeleton::after {
+  position: absolute;
+  inset: 0;
+  content: "";
+  transform: translateX(-100%);
+  animation: listSkeleton 1.25s infinite;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.08),
+    transparent
+  );
+}
+
+.list__message {
+  display: grid;
+  min-height: 180px;
+  place-items: center;
+  padding: 2rem;
+  color: #c7cdda;
+  text-align: center;
+}
+
+@keyframes listSkeleton {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@media (max-width: 760px) {
+  .list__header {
+    grid-template-columns: 1fr;
+  }
+
+  .movie__list {
+    padding-top: 2.5rem;
+  }
+
+  .list__cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .list__cards--wide {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 420px) {
+  .list__cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem;
+  }
+
+  .list__cards--wide {
+    grid-template-columns: 1fr;
+    gap: 1.75rem;
+  }
+
+  .list__title {
+    font-size: 1.55rem;
+  }
+}
+
+@media (min-width: 761px) and (max-width: 1040px) {
+  .list__cards {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .list__cards--wide {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }

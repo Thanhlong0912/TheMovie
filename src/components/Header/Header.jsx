@@ -1,28 +1,42 @@
 import React from "react";
 import "./Header.css";
-import { Link } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
+
+const navItems = [
+  { to: "/movies/popular", label: "Phim hot" },
+  { to: "/movies/top_rated", label: "Đánh giá cao" },
+  { to: "/movies/upcoming", label: "Sắp chiếu" },
+];
 
 const Header = () => {
   return (
-    <div className="header">
-      <div className="headerLeft">
-        <Link to="/">
-          <img
-            className="header__icon"
-            src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/69/IMDB_Logo_2016.svg/2560px-IMDB_Logo_2016.svg.png"
-          />
+    <header className="header">
+      <div className="header__inner">
+        <Link className="header__brand" to="/" aria-label="Themovie trang chủ">
+          <span className="header__brandMark" aria-hidden="true">
+            TM
+          </span>
+          <span className="header__brandText">
+            <strong>Themovie</strong>
+            <span>Movie discovery</span>
+          </span>
         </Link>
-        <Link to="/movies/popular" style={{ textDecoration: "none" }}>
-          <span>Popular</span>
-        </Link>
-        <Link to="/movies/top_rated" style={{ textDecoration: "none" }}>
-          <span>Top Rated</span>
-        </Link>
-        <Link to="/movies/upcoming" style={{ textDecoration: "none" }}>
-          <span>Upcoming</span>
-        </Link>
+
+        <nav className="header__nav" aria-label="Danh mục phim">
+          {navItems.map((item) => (
+            <NavLink
+              key={item.to}
+              className={({ isActive }) =>
+                isActive ? "header__navItem is-active" : "header__navItem"
+              }
+              to={item.to}
+            >
+              {item.label}
+            </NavLink>
+          ))}
+        </nav>
       </div>
-    </div>
+    </header>
   );
 };
 

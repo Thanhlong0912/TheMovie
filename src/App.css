@@ -1,5 +1,54 @@
 .App {
-  background-color: black;
-  color: white;
-  font-family: sans-serif;
+  min-height: 100%;
+  background:
+    linear-gradient(180deg, rgba(255, 77, 61, 0.06), transparent 360px),
+    #08090d;
+  color: #fff;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", sans-serif;
+}
+
+.notFound {
+  display: grid;
+  min-height: calc(100vh - 72px);
+  place-items: center;
+  align-content: center;
+  gap: 0.85rem;
+  width: min(680px, calc(100% - 2rem));
+  margin: 0 auto;
+  padding: 3rem 0;
+  text-align: center;
+}
+
+.notFound p,
+.notFound h1,
+.notFound span {
+  margin: 0;
+}
+
+.notFound p {
+  color: #f4c542;
+  font-size: 1rem;
+  font-weight: 900;
+}
+
+.notFound h1 {
+  font-size: 2.4rem;
+}
+
+.notFound span {
+  color: #a9afbf;
+  line-height: 1.7;
+}
+
+.notFound a {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  border-radius: 8px;
+  padding: 0 1rem;
+  background: #ff4d3d;
+  color: #fff;
+  font-weight: 900;
+  text-decoration: none;
 }

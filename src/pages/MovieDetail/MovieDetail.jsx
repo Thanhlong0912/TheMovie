@@ -1,138 +1,193 @@
 import React, { useEffect, useState } from "react";
 import "./MovieDetail.css";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
+import {
+  fetchMovieDetail,
+  formatDate,
+  formatRating,
+  formatRuntime,
+  formatVoteCount,
+  getImageUrl,
+  getMovieTitle,
+} from "../../utils/tmdb";
 
 const MovieDetail = () => {
-  const [currentMovieDetail, setMovie] = useState();
+  const [currentMovieDetail, setMovie] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState("");
   const { id } = useParams();
 
   useEffect(() => {
-    getData();
-    window.scrollTo(0, 0);
-  }, []);
+    const controller = new AbortController();
 
-  const getData = () => {
-    fetch(
-      `https://api.themoviedb.org/3/movie/${id}?api_key=e5d2b15814e40fdd2702780bca72cb4c&language=en-US`
-    )
-      .then((res) => res.json())
-      .then((data) => setMovie(data));
-  };
+    const getData = async () => {
+      try {
+        setIsLoading(true);
+        setError("");
+        const movie = await fetchMovieDetail(id, controller.signal);
+        setMovie(movie);
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      } catch (err) {
+        if (err.name !== "AbortError") {
+          setError(err.message || "Không thể tải chi tiết phim.");
+        }
+      } finally {
+        if (!controller.signal.aborted) {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    getData();
+
+    return () => controller.abort();
+  }, [id]);
+
+  if (isLoading) {
+    return (
+      <main className="movie movie--loading" aria-live="polite">
+        <div className="movie__detailSkeleton" />
+      </main>
+    );
+  }
+
+  if (error || !currentMovieDetail) {
+    return (
+      <main className="movie">
+        <section className="movie__empty" role="status">
+          <h1>Không tìm thấy phim</h1>
+          <p>{error || "Phim này hiện chưa có dữ liệu hiển thị."}</p>
+          <Link className="movie__backButton" to="/">
+            Về trang chủ
+          </Link>
+        </section>
+      </main>
+    );
+  }
+
+  const title = getMovieTitle(currentMovieDetail);
+  const backdropUrl = getImageUrl(currentMovieDetail.backdrop_path, "original");
+  const posterUrl = getImageUrl(currentMovieDetail.poster_path, "w500");
+  const productionCompanies =
+    currentMovieDetail.production_companies?.filter((company) => company.logo_path) ||
+    [];
 
   return (
-    <div className="movie">
-      <div className="movie__intro">
-        <img
-          className="movie__backdrop"
-          src={`https://image.tmdb.org/t/p/original${
-            currentMovieDetail ? currentMovieDetail.backdrop_path : ""
-          }`}
-        />
-      </div>
-      <div className="movie__detail">
-        <div className="movie__detailLeft">
+    <main className="movie">
+      <section
+        className="movie__hero"
+        style={
+          backdropUrl
+            ? {
+                backgroundImage: `linear-gradient(90deg, rgba(7, 8, 13, 0.98), rgba(7, 8, 13, 0.78) 44%, rgba(7, 8, 13, 0.28)), linear-gradient(0deg, rgba(7, 8, 13, 0.94), rgba(7, 8, 13, 0.08)), url(${backdropUrl})`,
+              }
+            : undefined
+        }
+      >
+        <div className="movie__heroInner">
           <div className="movie__posterBox">
-            <img
-              className="movie__poster"
-              src={`https://image.tmdb.org/t/p/original${
-                currentMovieDetail ? currentMovieDetail.poster_path : ""
-              }`}
-            />
+            {posterUrl ? (
+              <img className="movie__poster" src={posterUrl} alt={title} />
+            ) : (
+              <div className="movie__posterFallback">{title}</div>
+            )}
+          </div>
+
+          <div className="movie__summary">
+            <Link className="movie__backLink" to="/">
+              <i className="fas fa-arrow-left" aria-hidden="true" /> Trang chủ
+            </Link>
+            <p className="movie__label">
+              {currentMovieDetail.status || "Movie"}
+            </p>
+            <h1 className="movie__name">{title}</h1>
+            {currentMovieDetail.tagline && (
+              <p className="movie__tagline">{currentMovieDetail.tagline}</p>
+            )}
+
+            <div className="movie__facts" aria-label="Thông tin phim">
+              <span className="movie__rating">
+                <i className="fas fa-star" aria-hidden="true" />{" "}
+                {formatRating(currentMovieDetail.vote_average)}
+              </span>
+              <span>{formatVoteCount(currentMovieDetail.vote_count)} lượt vote</span>
+              <span>{formatRuntime(currentMovieDetail.runtime)}</span>
+              <span>{formatDate(currentMovieDetail.release_date)}</span>
+            </div>
+
+            {currentMovieDetail.genres?.length > 0 && (
+              <div className="movie__genres" aria-label="Thể loại">
+                {currentMovieDetail.genres.map((genre) => (
+                  <span className="movie__genre" key={genre.id}>
+                    {genre.name}
+                  </span>
+                ))}
+              </div>
+            )}
           </div>
         </div>
-        <div className="movie__detailRight">
-          <div className="movie__detailRightTop">
-            <div className="movie__name">
-              {currentMovieDetail ? currentMovieDetail.original_title : ""}
-            </div>
-            <div className="movie__tagline">
-              {currentMovieDetail ? currentMovieDetail.tagline : ""}
-            </div>
-            <div className="movie__rating">
-              {currentMovieDetail ? currentMovieDetail.vote_average : ""}{" "}
-              <i class="fas fa-star" />
-              <span className="movie__voteCount">
-                {currentMovieDetail
-                  ? "(" + currentMovieDetail.vote_count + ") votes"
-                  : ""}
-              </span>
-            </div>
-            <div className="movie__runtime">
-              {currentMovieDetail ? currentMovieDetail.runtime + " mins" : ""}
-            </div>
-            <div className="movie__releaseDate">
-              {currentMovieDetail
-                ? "Release date: " + currentMovieDetail.release_date
-                : ""}
-            </div>
-            <div className="movie__genres">
-              {currentMovieDetail && currentMovieDetail.genres
-                ? currentMovieDetail.genres.map((genre) => (
-                    <>
-                      <span className="movie__genre" id={genre.id}>
-                        {genre.name}
-                      </span>
-                    </>
-                  ))
-                : ""}
-            </div>
+      </section>
+
+      <section className="movie__body">
+        <article className="movie__synopsis">
+          <p className="movie__sectionLabel">Nội dung</p>
+          <h2>Synopsis</h2>
+          <p>
+            {currentMovieDetail.overview ||
+              "Chưa có mô tả chính thức cho phim này."}
+          </p>
+        </article>
+
+        <aside className="movie__links" aria-label="Liên kết hữu ích">
+          <p className="movie__sectionLabel">Liên kết</p>
+          <h2>Useful Links</h2>
+          <div className="movie__linkList">
+            {currentMovieDetail.homepage && (
+              <a
+                className="movie__Button movie__homeButton"
+                href={currentMovieDetail.homepage}
+                target="_blank"
+                rel="noreferrer"
+              >
+                Homepage
+                <i className="newTab fas fa-external-link-alt" aria-hidden="true" />
+              </a>
+            )}
+            {currentMovieDetail.imdb_id && (
+              <a
+                className="movie__Button movie__imdbButton"
+                href={`https://www.imdb.com/title/${currentMovieDetail.imdb_id}`}
+                target="_blank"
+                rel="noreferrer"
+              >
+                IMDb
+                <i className="newTab fas fa-external-link-alt" aria-hidden="true" />
+              </a>
+            )}
           </div>
-          <div className="movie__detailRightBottom">
-            <div className="synopsisText">Synopsis</div>
-            <div>{currentMovieDetail ? currentMovieDetail.overview : ""}</div>
+        </aside>
+      </section>
+
+      {productionCompanies.length > 0 && (
+        <section className="movie__productionSection">
+          <p className="movie__sectionLabel">Sản xuất</p>
+          <h2>Production companies</h2>
+          <div className="movie__production">
+            {productionCompanies.map((company) => (
+              <div className="productionCompanyImage" key={company.id}>
+                <img
+                  className="movie__productionCompany"
+                  src={getImageUrl(company.logo_path, "w300")}
+                  alt={company.name}
+                  loading="lazy"
+                />
+                <span>{company.name}</span>
+              </div>
+            ))}
           </div>
-        </div>
-      </div>
-      <div className="movie__links">
-        <div className="movie__heading">Useful Links</div>
-        {currentMovieDetail && currentMovieDetail.homepage && (
-          <a
-            href={currentMovieDetail.homepage}
-            target="_blank"
-            style={{ textDecoration: "none" }}
-          >
-            <p>
-              <span className="movie__homeButton movie__Button">
-                Homepage <i className="newTab fas fa-external-link-alt"></i>
-              </span>
-            </p>
-          </a>
-        )}
-        {currentMovieDetail && currentMovieDetail.imdb_id && (
-          <a
-            href={"https://www.imdb.com/title/" + currentMovieDetail.imdb_id}
-            target="_blank"
-            style={{ textDecoration: "none" }}
-          >
-            <p>
-              <span className="movie__imdbButton movie__Button">
-                IMDb<i className="newTab fas fa-external-link-alt"></i>
-              </span>
-            </p>
-          </a>
-        )}
-      </div>
-      <div className="movie__heading">Production companies</div>
-      <div className="movie__production">
-        {currentMovieDetail &&
-          currentMovieDetail.production_companies &&
-          currentMovieDetail.production_companies.map((company) => (
-            <>
-              {company.logo_path && (
-                <span className="productionCompanyImage">
-                  <img
-                    className="movie__productionComapany"
-                    src={
-                      "https://image.tmdb.org/t/p/original" + company.logo_path
-                    }
-                  />
-                  <span>{company.name}</span>
-                </span>
-              )}
-            </>
-          ))}
-      </div>
-    </div>
+        </section>
+      )}
+    </main>
   );
 };
 

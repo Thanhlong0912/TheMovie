@@ -1,33 +1,128 @@
 .header {
-    margin: 0 2.5rem;
-    padding: .5rem 0;
-    align-items: center;
-    display: flex;
-    justify-content:space-between;
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(7, 8, 13, 0.88);
+  backdrop-filter: blur(18px);
 }
 
-.headerLeft, .headerRight {
-    display: flex;
-    align-items: center;
-
+.header__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  width: min(1180px, calc(100% - 2rem));
+  min-height: 72px;
+  margin: 0 auto;
 }
 
-a > span{
-    margin: 0 30px;
-    font-size: 1.3rem;
-    cursor: pointer;
-    color: white;
+.header__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: #fff;
+  text-decoration: none;
 }
 
-a > span:hover {
-    color: red;
+.header__brandMark {
+  position: relative;
+  display: grid;
+  width: 44px;
+  height: 44px;
+  overflow: hidden;
+  place-items: center;
+  border-radius: 8px;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.16), transparent 32%),
+    linear-gradient(135deg, #ff4d3d, #f4c542);
+  color: #0c0e14;
+  font-size: 0.9rem;
+  font-weight: 900;
+  letter-spacing: 0;
+  box-shadow: 0 12px 28px rgba(255, 77, 61, 0.22);
 }
 
-.header__icon {
-    width: 80px;
-    cursor: pointer;
+.header__brandMark::before,
+.header__brandMark::after {
+  position: absolute;
+  top: 7px;
+  bottom: 7px;
+  width: 4px;
+  border-radius: 999px;
+  content: "";
+  background:
+    linear-gradient(#0c0e14 0 0) top / 100% 4px no-repeat,
+    linear-gradient(#0c0e14 0 0) center / 100% 4px no-repeat,
+    linear-gradient(#0c0e14 0 0) bottom / 100% 4px no-repeat;
+  opacity: 0.34;
 }
 
-.user__avatar {
-    font-size: 2rem;
+.header__brandMark::before {
+  left: 6px;
+}
+
+.header__brandMark::after {
+  right: 6px;
+}
+
+.header__brandText {
+  display: grid;
+  gap: 0.1rem;
+  line-height: 1;
+}
+
+.header__brandText strong {
+  font-size: 1.1rem;
+}
+
+.header__brandText span {
+  color: #a9afbf;
+  font-size: 0.74rem;
+}
+
+.header__nav {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  overflow-x: auto;
+  padding: 0.3rem;
+}
+
+.header__navItem {
+  flex: 0 0 auto;
+  min-height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  padding: 0 1rem;
+  color: #d8dce8;
+  font-weight: 700;
+  text-decoration: none;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.header__navItem:hover,
+.header__navItem:focus-visible {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+}
+
+.header__navItem.is-active {
+  background: rgba(255, 77, 61, 0.16);
+  color: #ff7668;
+}
+
+@media (max-width: 720px) {
+  .header__inner {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 0.9rem 0;
+  }
+
+  .header__nav {
+    width: 100%;
+  }
 }
