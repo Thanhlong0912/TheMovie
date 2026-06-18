@@ -1,0 +1,149 @@
+.discover {
+  min-height: calc(100vh - 72px);
+  padding: 4rem 0 5rem;
+  color: #fff;
+}
+
+.discover__header,
+.discover__results {
+  width: min(1320px, calc(100% - 2rem));
+  margin: 0 auto;
+}
+
+.discover__header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+}
+
+.discover__eyebrow {
+  margin-bottom: 0.45rem;
+  color: #f4c542;
+  font-size: 0.8rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.discover__header h1 {
+  font-size: clamp(2rem, 6vw, 3.5rem);
+  line-height: 1;
+}
+
+.discover__switch {
+  display: inline-flex;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  padding: 0.25rem;
+  background: #111217;
+}
+
+.discover__switch a {
+  display: inline-flex;
+  min-height: 40px;
+  align-items: center;
+  border-radius: 7px;
+  padding: 0 0.9rem;
+  color: #d8dce8;
+  font-weight: 850;
+  text-decoration: none;
+}
+
+.discover__switch a.is-active {
+  background: #f4c542;
+  color: #10131a;
+}
+
+.discover__grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 2rem 1.35rem;
+}
+
+.discover__skeleton,
+.discover__message {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  background: #111217;
+}
+
+.discover__skeleton {
+  position: relative;
+  min-height: 410px;
+  overflow: hidden;
+}
+
+.discover__skeleton::after {
+  position: absolute;
+  inset: 0;
+  content: "";
+  transform: translateX(-100%);
+  animation: discoverSkeleton 1.25s infinite;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.08),
+    transparent
+  );
+}
+
+.discover__message {
+  display: grid;
+  min-height: 190px;
+  place-items: center;
+  padding: 2rem;
+  color: #c7cdda;
+  text-align: center;
+}
+
+@keyframes discoverSkeleton {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@media (max-width: 1040px) {
+  .discover__grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 900px) {
+  .discover__grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 720px) {
+  .discover {
+    padding-top: 3rem;
+  }
+
+  .discover__header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .discover__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.25rem 0.85rem;
+  }
+}
+
+@media (max-width: 420px) {
+  .discover__grid {
+    gap: 0.85rem 0.65rem;
+  }
+
+  .discover__switch {
+    width: 100%;
+  }
+
+  .discover__switch a {
+    flex: 1;
+    justify-content: center;
+  }
+}

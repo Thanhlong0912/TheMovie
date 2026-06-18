@@ -8,13 +8,17 @@ import {
   getMovieYear,
 } from "../../utils/tmdb";
 
-const Card = ({ movie, rank, variant = "ranked" }) => {
+const Card = ({ movie, rank, variant = "ranked", mediaType }) => {
   const title = getMovieTitle(movie);
   const posterUrl = getImageUrl(movie?.poster_path, "w500");
   const backdropUrl = getImageUrl(movie?.backdrop_path, "w780");
   const imageUrl = posterUrl || backdropUrl;
   const previewImageUrl = backdropUrl || posterUrl;
-  const releaseYear = getMovieYear(movie.release_date);
+  const releaseYear = getMovieYear(movie.release_date || movie.first_air_date);
+  const resolvedMediaType =
+    mediaType || movie.media_type || (movie.name || movie.first_air_date ? "tv" : "movie");
+  const detailPath =
+    resolvedMediaType === "tv" ? `/tv/${movie.id}` : `/movie/${movie.id}`;
   const episode = Math.max(10, Math.round(movie.vote_average || 10) + (rank || 0));
   const overview =
     movie?.overview ||
@@ -24,7 +28,7 @@ const Card = ({ movie, rank, variant = "ranked" }) => {
     return (
       <Link
         className="movie-card movie-card--wide"
-        to={`/movie/${movie.id}`}
+        to={detailPath}
         aria-label={`Xem chi tiết ${title}`}
       >
         <article className="wide-card">
@@ -48,7 +52,7 @@ const Card = ({ movie, rank, variant = "ranked" }) => {
 
             <div className="wide-card__meta">
               <h3>{title}</h3>
-              <p>{movie.original_title || title}</p>
+              <p>{movie.original_title || movie.original_name || title}</p>
               <small>
                 {releaseYear} • TMDb {formatRating(movie.vote_average)}
               </small>
@@ -62,7 +66,7 @@ const Card = ({ movie, rank, variant = "ranked" }) => {
   return (
     <Link
       className="movie-card"
-      to={`/movie/${movie.id}`}
+      to={detailPath}
       aria-label={`Xem chi tiết ${title}`}
     >
       <article className="cards">
@@ -81,7 +85,9 @@ const Card = ({ movie, rank, variant = "ranked" }) => {
           <span className="card__rank">{rank}</span>
           <div className="card__meta">
             <h3 className="card__title">{title}</h3>
-            <p className="card__subtitle">{movie.original_title || title}</p>
+            <p className="card__subtitle">
+              {movie.original_title || movie.original_name || title}
+            </p>
             <small>HD • {releaseYear}</small>
           </div>
         </div>
@@ -96,7 +102,9 @@ const Card = ({ movie, rank, variant = "ranked" }) => {
           </div>
           <div className="cards__previewBody">
             <h3>{title}</h3>
-            <p className="cards__previewSubtitle">{movie.original_title || title}</p>
+            <p className="cards__previewSubtitle">
+              {movie.original_title || movie.original_name || title}
+            </p>
             <div className="cards__previewActions">
               <span className="cards__watch">
                 <i className="fas fa-play" aria-hidden="true" />

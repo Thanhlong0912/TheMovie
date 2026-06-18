@@ -4,6 +4,9 @@ import Header from "./components/Header/Header";
 import Home from "./pages/Home/Home";
 import MovieList from "./components/MovieList/MovieList";
 import MovieDetail from "./pages/MovieDetail/MovieDetail";
+import Discover from "./pages/Discover/Discover";
+import Search from "./pages/Search/Search";
+import StarSearch from "./pages/StarSearch/StarSearch";
 
 const NotFound = () => (
   <main className="notFound">
@@ -22,7 +25,12 @@ function App() {
         <Routes>
           <Route index element={<Home />}></Route>
           <Route path="movie/:id" element={<MovieDetail />}></Route>
+          <Route path="tv/:id" element={<MovieDetail mediaType="tv" />}></Route>
           <Route path="movies/:type" element={<MovieList />}></Route>
+          <Route path="discover" element={<Discover />}></Route>
+          <Route path="search" element={<Search />}></Route>
+          <Route path="stars" element={<StarSearch />}></Route>
+          <Route path="star-search" element={<StarSearch />}></Route>
           <Route path="*" element={<NotFound />}></Route>
         </Routes>
       </Router>

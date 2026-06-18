@@ -3,6 +3,7 @@ import "./MovieDetail.css";
 import { Link, useParams } from "react-router-dom";
 import {
   fetchMovieDetail,
+  fetchTvDetail,
   formatDate,
   formatRating,
   formatRuntime,
@@ -11,7 +12,7 @@ import {
   getMovieTitle,
 } from "../../utils/tmdb";
 
-const MovieDetail = () => {
+const MovieDetail = ({ mediaType = "movie" }) => {
   const [currentMovieDetail, setMovie] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
@@ -24,7 +25,10 @@ const MovieDetail = () => {
       try {
         setIsLoading(true);
         setError("");
-        const movie = await fetchMovieDetail(id, controller.signal);
+        const movie =
+          mediaType === "tv"
+            ? await fetchTvDetail(id, controller.signal)
+            : await fetchMovieDetail(id, controller.signal);
         setMovie(movie);
         window.scrollTo({ top: 0, behavior: "smooth" });
       } catch (err) {
@@ -41,7 +45,7 @@ const MovieDetail = () => {
     getData();
 
     return () => controller.abort();
-  }, [id]);
+  }, [id, mediaType]);
 
   if (isLoading) {
     return (
@@ -71,6 +75,7 @@ const MovieDetail = () => {
   const productionCompanies =
     currentMovieDetail.production_companies?.filter((company) => company.logo_path) ||
     [];
+  const cast = currentMovieDetail.credits?.cast?.slice(0, 12) || [];
 
   return (
     <main className="movie">
@@ -111,8 +116,16 @@ const MovieDetail = () => {
                 {formatRating(currentMovieDetail.vote_average)}
               </span>
               <span>{formatVoteCount(currentMovieDetail.vote_count)} lượt vote</span>
-              <span>{formatRuntime(currentMovieDetail.runtime)}</span>
-              <span>{formatDate(currentMovieDetail.release_date)}</span>
+              <span>
+                {mediaType === "tv"
+                  ? formatRuntime(currentMovieDetail.episode_run_time?.[0])
+                  : formatRuntime(currentMovieDetail.runtime)}
+              </span>
+              <span>
+                {formatDate(
+                  currentMovieDetail.release_date || currentMovieDetail.first_air_date
+                )}
+              </span>
             </div>
 
             {currentMovieDetail.genres?.length > 0 && (
@@ -167,6 +180,40 @@ const MovieDetail = () => {
           </div>
         </aside>
       </section>
+
+      {cast.length > 0 && (
+        <section className="movie__castSection">
+          <p className="movie__sectionLabel">Diễn viên</p>
+          <h2>Cast</h2>
+          <div className="movie__castList">
+            {cast.map((actor) => {
+              const actorName = actor.name || actor.original_name || "Chưa rõ tên";
+              const profileUrl = getImageUrl(actor.profile_path, "w185");
+
+              return (
+                <Link
+                  className="movie__castMember"
+                  to={`/stars?query=${encodeURIComponent(actorName)}`}
+                  key={actor.cast_id || actor.credit_id}
+                  aria-label={`Tìm kiếm ${actorName}`}
+                >
+                  <div className="movie__castPhoto">
+                    {profileUrl ? (
+                      <img src={profileUrl} alt={actorName} loading="lazy" />
+                    ) : (
+                      <span>{actorName}</span>
+                    )}
+                  </div>
+                  <div>
+                    <strong>{actorName}</strong>
+                    {actor.character && <span>{actor.character}</span>}
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+        </section>
+      )}
 
       {productionCompanies.length > 0 && (
         <section className="movie__productionSection">
